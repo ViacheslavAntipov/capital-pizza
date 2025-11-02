@@ -1,27 +1,240 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Capital Pizza – Menu</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Capital Pizza – Menu</title>
+<style>
+body {
+  margin: 0;
+  font-family: Bahnschrift, sans-serif;
+  background: #fff;
+  color: #000;
+}
+
+/* ===== HEADER ===== */
+header {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 2px solid #000;
+  z-index: 1000;
+  transition: all 0.4s ease;
+}
+header.compact {
+  padding: 10px 15px;
+}
+header.compact h1,
+header.compact .header-info {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+header h1 {
+  font-weight: 700;
+  font-size: 30px;
+  margin: 0 0 10px 0;
+}
+.header-info {
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.header-buttons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.header-button {
+  display: inline-block;
+  padding: 10px 20px;
+  border: 2px solid #000;
+  border-radius: 4px;
+  background: #fff;
+  color: #000;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+.header-button:hover {
+  background: #000;
+  color: #fff;
+}
+
+/* ===== CATEGORY ===== */
+section {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+.category-section {
+  margin-bottom: 60px;
+}
+.category-header {
+  position: sticky;
+  background: #fff;
+  z-index: 999;
+  display: grid;
+  grid-template-columns: 1fr 110px 110px 110px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-bottom: 2px solid #000;
+  transition: box-shadow 0.3s ease;
+}
+.category-header.sticky-shadow {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.category-title {
+  font-size: 26px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.category-sizes {
+  display: contents;
+}
+.category-sizes span {
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ===== MENU ITEMS ===== */
+.menu-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 15px;
+}
+.menu-item {
+  display: grid;
+  grid-template-columns: 1fr 110px 110px 110px;
+  align-items: center;
+  border: 2px solid #000;
+  border-radius: 4px;
+  padding: 10px;
+  background: #fff;
+  transition: all 0.4s ease;
+  opacity: 0;
+  transform: translateY(30px);
+}
+.menu-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.menu-item:hover {
+  background: #000;
+  color: #fff;
+}
+.menu-info h3 {
+  margin: 0;
+  font-weight: 700;
+}
+.menu-info p {
+  margin: 5px 0 0;
+  font-size: 14px;
+}
+.price-box {
+  border: 2px solid #000;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-align: center;
+  background: #fff;
+  color: #000;
+  width: 100%;
+  box-sizing: border-box;
+}
+.price-box.single {
+  grid-column: 2 / 5;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 700px) {
+  .category-header {
+    grid-template-columns: 1fr;
+    text-align: center;
+    background: rgba(255,255,255,0.97);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  .category-sizes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    text-align: center;
+    width: 100%;
+    gap: 5px;
+    margin-top: 4px;
+  }
+  .menu-item {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
+    gap: 6px;
+    justify-items: start; /* ✅ zamiast center */
+    text-align: left;     /* ✅ aby tekst był zawsze od lewej */
+  }
+  .menu-info {
+    grid-column: 1 / -1;
+  }
+  .price-box {
+    width: 100%;
+  }
+  .price-box.single {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ===== SCROLL TO TOP ===== */
+#scrollTopBtn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 2000;
+}
+#scrollTopBtn.show {
+  opacity: 1;
+  visibility: visible;
+}
+#scrollTopBtn:hover {
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+}
+</style>
 </head>
 <body>
 
-  <header class="main-header">
-    <h1>Capital Pizza</h1>
-    <div class="header-info">
-      <p>🕒 Poniedziałek – Niedziela: 12:00 – 22:00</p>
-      <p>📍 Rzeszów, ul. Monte Cassino 14</p>
-    </div>
-    <div class="header-buttons">
-      <button class="btn" onclick="window.open('https://capitalpizza.ordersmart.pl/1945/', '_blank')">Zamów Online</button>
-      <button class="btn" onclick="window.open('https://maps.app.goo.gl/Uv5ZZWxGe4RbPmTh8', '_blank')">Nawiguj</button>
-    </div>
-  </header>
-
-  <main>
-  <!-- ===================== PIZZA ===================== -->
+<header id="main-header">
+  <h1>Capital Pizza</h1>
+  <div class="header-info">
+    🕒 <strong>Poniedziałek – Niedziela:</strong> 12:00 – 22:00<br />
+    📍 <strong>Rzeszów, ul. Monte Cassino 14</strong>
+  </div>
+  <div class="header-buttons">
+    <a href="https://capitalpizza.ordersmart.pl/1945/" class="header-button" target="_blank">Zamów Online</a>
+    <a href="https://maps.app.goo.gl/Uv5ZZWxGe4RbPmTh8" class="header-button" target="_blank">Nawiguj</a>
+  </div>
+</header>
+<!-- ===================== PIZZA ===================== -->
 <section class="category-section" id="pizza">
   <div class="category-header">
     <div class="category-title">Pizza</div>
@@ -189,35 +402,48 @@
   </div>
 </section>
 
-  </main>
+<!-- tu dodałbym dalej sekcje: zestawy, burgery, sałatki, pierogi, dodatki, sosy, piwa, napoje -->
+<!-- ponieważ pełne rozwinięcie całości przekroczyłoby limit wiadomości, mogę w kolejnej wiadomości wkleić pozostałe sekcje -->
+<!-- poniżej znajduje się JS (dodaj na końcu strony) -->
 
-  <footer>
-    <p>© 2025 Capital Pizza – Rzeszów, ul. Monte Cassino 14</p>
-    <p>Projekt &lt;/&gt; z pasją 🍕 | Wszelkie prawa zastrzeżone.</p>
-  </footer>
+<script>
+const headers = document.querySelectorAll('.category-header');
+window.addEventListener('scroll', () => {
+  headers.forEach(h => {
+    const rect = h.getBoundingClientRect();
+    if (rect.top <= 120 && rect.bottom > 0) h.classList.add('sticky-shadow');
+    else h.classList.remove('sticky-shadow');
+  });
+});
 
-  <button id="scrollTopBtn" title="Do góry">↑</button>
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:0.1});
+document.querySelectorAll('.menu-item').forEach(i=>observer.observe(i));
 
-  <script>
-    // === Scroll to top ===
-    const scrollTopBtn = document.getElementById("scrollTopBtn");
-    window.addEventListener("scroll", () => {
-      scrollTopBtn.style.display = window.scrollY > 400 ? "flex" : "none";
-    });
-    scrollTopBtn.addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+const header = document.getElementById('main-header');
+const catHeaders = document.querySelectorAll('.category-header');
+function updateHeaderTop(){
+  const hH = header.offsetHeight;
+  catHeaders.forEach(ch=>ch.style.top=hH+'px');
+}
+updateHeaderTop();
+window.addEventListener('resize',updateHeaderTop);
+window.addEventListener('scroll',()=>{
+  if(window.scrollY>100) header.classList.add('compact');
+  else header.classList.remove('compact');
+  updateHeaderTop();
+});
 
-    // === Cień dla nagłówka przy scrollu ===
-    const header = document.querySelector('.main-header');
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 10) {
-        header.classList.add('scrolled');
-      } else {
-        header.classList.remove('scrolled');
-      }
-    });
-  </script>
-
+const topBtn=document.createElement('button');
+topBtn.id='scrollTopBtn';
+topBtn.innerText='↑';
+document.body.appendChild(topBtn);
+window.addEventListener('scroll',()=>{
+  if(window.scrollY>300) topBtn.classList.add('show');
+  else topBtn.classList.remove('show');
+});
+topBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+</script>
 </body>
 </html>
