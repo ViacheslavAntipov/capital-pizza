@@ -1,6 +1,6 @@
 const categoryMap = {
   pizza: { name: "🍕 Pizza", sizes: ["Mała (25 cm)", "Średnia (30 cm)", "Familijna (40 cm)"] },
-  dodatki_pizza: { name: "🧀 Dodatki do pizzy" },
+  dodatki_pizza: { name: "🧀 Dodatki do pizzy", sizes: ["Mała", "Średnia", "Familijna"] },
   zestawy: { name: "🍗 Zestawy obiadowe" },
   burgery: { name: "🍔 Burgery" },
   salatki: { name: "🥗 Sałatki" },
@@ -29,7 +29,6 @@ async function loadMenu() {
       const title = document.createElement("div");
       title.classList.add("menu-category");
       title.textContent = categoryMap[key]?.name || key;
-
       sticky.appendChild(title);
 
       if (categoryMap[key]?.sizes) {
@@ -87,12 +86,12 @@ async function loadMenu() {
 }
 
 // === BURGER ===
-const burger = document.getElementById("burger-icon");
-const sideMenu = document.getElementById("side-menu");
-const closeMenu = document.getElementById("close-menu");
-
-burger.addEventListener("click", () => sideMenu.classList.add("open"));
-closeMenu.addEventListener("click", () => sideMenu.classList.remove("open"));
+document.getElementById("burger-icon").addEventListener("click", () =>
+  document.getElementById("side-menu").classList.add("open")
+);
+document.getElementById("close-menu").addEventListener("click", () =>
+  document.getElementById("side-menu").classList.remove("open")
+);
 
 // === SCROLL TO TOP ===
 const scrollBtn = document.getElementById("scrollTopBtn");
@@ -100,6 +99,8 @@ window.addEventListener("scroll", () => {
   if (window.scrollY > 300) scrollBtn.classList.add("show");
   else scrollBtn.classList.remove("show");
 });
-scrollBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+scrollBtn.addEventListener("click", () =>
+  window.scrollTo({ top: 0, behavior: "smooth" })
+);
 
 document.addEventListener("DOMContentLoaded", loadMenu);
