@@ -12,7 +12,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 12px 20px;
   border-bottom: 2px solid #000;
   position: sticky;
   top: 0;
@@ -20,48 +20,53 @@ header {
   z-index: 1000;
 }
 
-/* Logo po lewej */
-.logo-wrapper {
-  display: flex;
-  align-items: center;
-}
-.logo {
-  width: 50px;
-  height: 50px;
+/* Lewa sekcja (logo) */
+.header-left .logo {
+  width: 65px;
+  height: 65px;
+  object-fit: cover;
+  border-radius: 50%;
+  filter: grayscale(100%);
 }
 
-/* Środek headera */
-.center-header {
+/* Środek nagłówka */
+.header-center {
   text-align: center;
   flex: 1;
 }
-.center-header h1 {
+.header-center h1 {
   margin: 0;
-  font-size: 26px;
+  font-size: 28px;
 }
 .subtitle {
-  margin: 0;
+  margin: 5px 0;
+  color: #555;
   font-size: 14px;
-  color: #666;
 }
 
-/* Przycisk zamów online – widoczny tylko w mobile */
-.order-btn-mobile {
-  display: none;
+/* Przycisk "Zamów online" */
+.order-btn {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 10px 25px;
   background: #000;
   color: #fff;
+  border-radius: 4px;
   text-decoration: none;
-  padding: 6px 18px;
-  border-radius: 5px;
   font-weight: bold;
-  font-size: 14px;
-  margin-top: 5px;
+  font-size: 15px;
 }
-.order-btn-mobile:hover {
+.order-btn:hover {
   background: #e63946;
 }
 
-/* ===== NAWIGACJA DESKTOPOWA ===== */
+/* Prawa sekcja (nawigacja + burger) */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .main-nav {
   display: flex;
   gap: 20px;
@@ -75,14 +80,13 @@ header {
   color: #e63946;
 }
 
-/* ===== BURGER ===== */
 #burger-icon {
   display: none;
-  font-size: 28px;
+  font-size: 30px;
   cursor: pointer;
 }
 
-/* ===== PANEL BOCZNY ===== */
+/* ===== PANEL BOCZNY (MOBILE MENU) ===== */
 #side-menu {
   position: fixed;
   top: 0;
@@ -98,10 +102,12 @@ header {
   z-index: 3000;
   pointer-events: none;
 }
+
 #side-menu.open {
   right: 0;
   pointer-events: auto;
 }
+
 #side-menu a {
   color: #fff;
   text-decoration: none;
@@ -112,6 +118,7 @@ header {
 #side-menu a:hover {
   color: #e63946;
 }
+
 #close-menu {
   position: absolute;
   top: 15px;
@@ -122,6 +129,7 @@ header {
   font-size: 26px;
   cursor: pointer;
 }
+
 .side-order-btn {
   background: #fff;
   color: #000;
@@ -136,11 +144,14 @@ header {
   color: #fff;
 }
 
-/* ===== SEKCJE ===== */
+/* ===== HERO ===== */
 .hero {
   text-align: center;
   padding: 100px 20px;
   background: #f7f7f7;
+}
+.hero h2 {
+  font-size: 36px;
 }
 .cta-button {
   display: inline-block;
@@ -156,42 +167,50 @@ header {
   background: #e63946;
 }
 
-/* ===== MENU ===== */
+/* ===== SEKCJE ===== */
 .content-section {
   max-width: 1000px;
   margin: 60px auto;
   padding: 0 20px;
   box-sizing: border-box;
 }
+.content-section h2 {
+  text-transform: uppercase;
+  border-bottom: 3px solid #000;
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+}
+
+/* ===== MENU ===== */
 .menu-category {
   position: sticky;
-  top: 70px; /* wysokość headera */
+  top: 70px;
   background: #fff;
   z-index: 500;
-  padding: 14px 0; /* równy odstęp góra-dół */
+  padding: 14px 0;
   border-bottom: 2px solid #000;
   font-weight: bold;
   text-transform: uppercase;
-  text-align: left;
   transition: box-shadow 0.3s ease, background 0.3s ease;
 }
-
 .menu-category.sticky-shadow {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
+
 .menu-grid {
   display: flex;
   flex-direction: column;
   gap: 15px;
   margin-top: 15px;
 }
+
 .menu-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   border: 2px solid #000;
   border-radius: 6px;
-  padding: 15px 20px;
+  padding: 20px;
   background: #fff;
   opacity: 0;
   transform: translateY(30px);
@@ -205,8 +224,27 @@ header {
   background: #000;
   color: #fff;
 }
+.menu-info {
+  flex: 1;
+}
+.menu-prices {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: right;
+}
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.size {
+  font-size: 13px;
+  color: #555;
+}
 .price {
   font-weight: bold;
+  font-size: 15px;
 }
 
 /* ===== STOPKA ===== */
@@ -215,6 +253,7 @@ footer {
   color: #fff;
   text-align: center;
   padding: 25px 10px;
+  font-size: 14px;
 }
 
 /* ===== PRZYCISK POWRÓT NA GÓRĘ ===== */
@@ -230,8 +269,77 @@ footer {
   height: 45px;
   font-size: 22px;
   cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
-  z-index: 20
+  z-index: 2000;
+}
+#scrollTopBtn.show {
+  opacity: 1;
+  visibility: visible;
+}
+#scrollTopBtn:hover {
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+}
 
+/* ===== RESPONSYWNOŚĆ ===== */
+@media (max-width: 900px) {
+  .main-nav {
+    display: none;
+  }
+  #burger-icon {
+    display: block;
+  }
+  .header-left .logo {
+    width: 50px;
+    height: 50px;
+  }
+  .header-center h1 {
+    font-size: 22px;
+  }
+  .subtitle {
+    font-size: 13px;
+  }
+  .order-btn {
+    display: block;
+    margin: 8px auto 0;
+    font-size: 14px;
+    width: fit-content;
+  }
+  header {
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+  .header-left, .header-right {
+    flex: 1 1 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header-center {
+    flex-basis: 100%;
+  }
+
+  .menu-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .menu-prices {
+    text-align: left;
+    margin-top: 10px;
+  }
+  .price-row {
+    justify-content: flex-start;
+  }
+}
+
+/* ===== UKRYCIE MENU NA DESKTOPIE ===== */
+@media (min-width: 901px) {
+  #side-menu {
+    display: none !important;
+  }
+}
