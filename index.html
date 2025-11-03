@@ -3,38 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Capital Pizza 2.1</title>
-  <meta name="description" content="Capital Pizza – najlepsza pizza w Rzeszowie. Sprawdź nasze menu i zamów online!" />
+  <title>Capital Pizza</title>
+  <meta name="description" content="Capital Pizza – najlepsza pizza w Rzeszowie. Zamów online!" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 
 <body>
   <!-- ===== HEADER ===== -->
   <header id="main-header">
-    <!-- LEWA STRONA: LOGO -->
-    <div class="logo-wrapper">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a3/Pizza_slice_icon.png" alt="Logo Capital Pizza" class="logo">
+    <!-- Logo po lewej -->
+    <div class="header-left">
+      <img
+        src="https://scontent-waw2-2.xx.fbcdn.net/v/t39.30808-6/518813409_1287856906676550_3734132123728167354_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=CHIiAaJcH4QQ7kNvwGCpkxG&_nc_oc=Adkd8Zx8PTFdlyMdZ4BKE3gqQavCXqmdampOa5gKCN_F-Z95n8jCnjUhRvEkdc_Ghm0&_nc_zt=23&_nc_ht=scontent-waw2-2.xx&_nc_gid=N-yjljBwnxuUHM4fqTrRhA&oh=00_AfjW6mBkj769I0K-UaVegntMQh-1EOvRqqLPKzPMu57Y_g&oe=690F0745"
+        alt="Logo Capital Pizza"
+        class="logo"
+      />
     </div>
 
-    <!-- ŚRODEK: TYTUŁ + PRZYCISK ZAMÓW -->
-    <div class="center-header">
+    <!-- Tytuł i przycisk w środku -->
+    <div class="header-center">
       <h1>Capital Pizza</h1>
       <p class="subtitle">🍕 Najlepsza pizza w Rzeszowie</p>
-      <a href="https://capitalpizza.ordersmart.pl/1945" target="_blank" class="order-btn-mobile">Zamów online</a>
+      <a href="https://capitalpizza.ordersmart.pl/1945" target="_blank" class="cta-button order-btn">Zamów online</a>
     </div>
 
-    <!-- PRAWA STRONA: BURGER MENU -->
-    <div id="burger-icon">☰</div>
-
-    <!-- NAWIGACJA DESKTOPOWA -->
-    <nav class="main-nav">
-      <a href="#home">Strona główna</a>
-      <a href="#menu">Menu</a>
-      <a href="#onas">O nas</a>
-      <a href="#galeria">Galeria</a>
-      <a href="#kontakt">Kontakt</a>
-    </nav>
+    <!-- Nawigacja i burger po prawej -->
+    <div class="header-right">
+      <nav class="main-nav">
+        <a href="#home">Strona główna</a>
+        <a href="#menu">Menu</a>
+        <a href="#onas">O nas</a>
+        <a href="#galeria">Galeria</a>
+        <a href="#kontakt">Kontakt</a>
+      </nav>
+      <div id="burger-icon">☰</div>
+    </div>
   </header>
 
   <!-- ===== PANEL BOCZNY ===== -->
@@ -48,7 +51,7 @@
     <a href="https://capitalpizza.ordersmart.pl/1945" target="_blank" class="side-order-btn">Zamów online</a>
   </nav>
 
-  <!-- ===== TREŚĆ STRONY ===== -->
+  <!-- ===== STRONA GŁÓWNA ===== -->
   <main>
     <section id="home" class="hero">
       <h2>Witamy w Capital Pizza!</h2>
