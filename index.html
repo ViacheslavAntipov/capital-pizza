@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Capital Pizza 2.0</title>
-  <meta name="description" content="Capital Pizza – najlepsza pizza w Rzeszowie. Sprawdź nasze menu, zamów online lub odwiedź nas na ul. Monte Cassino 14." />
+  <title>Capital Pizza 2.1</title>
+  <meta name="description" content="Capital Pizza – najlepsza pizza w Rzeszowie. Sprawdź nasze menu i zamów online!" />
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
@@ -12,15 +12,22 @@
 <body>
   <!-- ===== HEADER ===== -->
   <header id="main-header">
-    <div class="logo-area">
-      <h1>Capital Pizza</h1>
-      <p>🍕 Najlepsza pizza w Rzeszowie</p>
+    <!-- LEWA STRONA: LOGO -->
+    <div class="logo-wrapper">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a3/Pizza_slice_icon.png" alt="Logo Capital Pizza" class="logo">
     </div>
 
-    <!-- Burger ikona -->
+    <!-- ŚRODEK: TYTUŁ + PRZYCISK ZAMÓW -->
+    <div class="center-header">
+      <h1>Capital Pizza</h1>
+      <p class="subtitle">🍕 Najlepsza pizza w Rzeszowie</p>
+      <a href="https://capitalpizza.ordersmart.pl/1945" target="_blank" class="order-btn-mobile">Zamów online</a>
+    </div>
+
+    <!-- PRAWA STRONA: BURGER MENU -->
     <div id="burger-icon">☰</div>
 
-    <!-- Menu desktop -->
+    <!-- NAWIGACJA DESKTOPOWA -->
     <nav class="main-nav">
       <a href="#home">Strona główna</a>
       <a href="#menu">Menu</a>
@@ -30,7 +37,7 @@
     </nav>
   </header>
 
-  <!-- ===== PANEL BOCZNY (burger menu) ===== -->
+  <!-- ===== PANEL BOCZNY ===== -->
   <nav id="side-menu">
     <button id="close-menu">×</button>
     <a href="#home">Strona główna</a>
@@ -38,9 +45,10 @@
     <a href="#onas">O nas</a>
     <a href="#galeria">Galeria</a>
     <a href="#kontakt">Kontakt</a>
+    <a href="https://capitalpizza.ordersmart.pl/1945" target="_blank" class="side-order-btn">Zamów online</a>
   </nav>
 
-  <!-- ===== STRONA GŁÓWNA ===== -->
+  <!-- ===== TREŚĆ STRONY ===== -->
   <main>
     <section id="home" class="hero">
       <h2>Witamy w Capital Pizza!</h2>
@@ -48,7 +56,6 @@
       <a href="#menu" class="cta-button">Zobacz menu</a>
     </section>
 
-    <!-- ===== MENU ===== -->
     <section id="menu" class="content-section">
       <h2>Menu</h2>
       <div id="menu-container">
@@ -56,19 +63,16 @@
       </div>
     </section>
 
-    <!-- ===== O NAS ===== -->
     <section id="onas" class="content-section">
       <h2>O nas</h2>
       <p>Capital Pizza to rodzinna pizzeria z sercem w Rzeszowie. Stawiamy na jakość, świeżość i pasję do smaku.</p>
     </section>
 
-    <!-- ===== GALERIA ===== -->
     <section id="galeria" class="content-section">
       <h2>Galeria</h2>
       <p>Wkrótce pojawi się galeria naszych dań i wnętrza lokalu.</p>
     </section>
 
-    <!-- ===== KONTAKT ===== -->
     <section id="kontakt" class="content-section">
       <h2>Kontakt</h2>
       <p><strong>Adres:</strong> Rzeszów, ul. Monte Cassino 14<br>
@@ -82,11 +86,11 @@
     </section>
   </main>
 
-  <!-- ===== FOOTER ===== -->
   <footer>
     <p>© 2025 Capital Pizza – Wszystkie prawa zastrzeżone.</p>
   </footer>
 
+  <button id="scrollTopBtn" title="Wróć na górę">↑</button>
   <script src="script.js"></script>
 </body>
 </html>
