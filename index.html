@@ -190,44 +190,50 @@ section {
     grid-column: 1 / -1;
   }
 }
-/* --- DODATKI DO PIZZY (identyczny wygląd jak PIZZA) --- */
-.pizza-sizes {
-  display: flex;
-  justify-content: flex-end;
-  gap: 40px;
-  text-align: center;
-  font-weight: 600;
-  font-size: 1rem;
+/* ===================== DODATKI DO PIZZY ===================== */
+.category-header-grid {
+  display: grid;
+  grid-template-columns: 1fr repeat(3, 120px);
+  align-items: end;
+  width: 100%;
+  border-bottom: 2px solid #000;
+  padding: 10px 20px;
 }
 
-.pizza-sizes div {
-  display: flex;
-  flex-direction: column;
+.category-sizes-grid {
+  display: contents;
+}
+
+.category-sizes-grid div {
+  text-align: center;
+  font-weight: 600;
+}
+
+.category-sizes-grid span {
+  font-size: 0.8rem;
+  font-weight: normal;
+}
+
+.pizza-addons-grid {
+  display: grid;
+  grid-template-columns: 1fr repeat(3, 120px);
+  gap: 10px;
   align-items: center;
 }
 
-.pizza-sizes span {
-  font-size: 0.8rem;
-  font-weight: normal;
-  margin-top: 2px;
+.pizza-addons-grid .menu-item {
+  display: contents;
 }
 
-.category-header.sticky {
-  position: sticky;
-  top: 120px;
-  background: #fff;
-  z-index: 10;
-  border-bottom: 2px solid #000;
-  padding: 12px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+.pizza-addons-grid .menu-info {
+  grid-column: 1 / 2;
+  padding: 15px 20px;
 }
 
-.category-title {
-  font-size: 1.8em;
-  font-weight: 700;
-  text-transform: uppercase;
+.pizza-addons-grid .price-box {
+  justify-self: center;
+  width: 100px;
+  text-align: center;
 }
 /* ===== SCROLL TO TOP ===== */
 #scrollTopBtn {
@@ -324,15 +330,17 @@ footer p {
 <!-- ===================== DODATKI DO PIZZY ===================== -->
 <section class="category-section">
   <div class="category-header sticky">
-    <h2 class="category-title">DODATKI DO PIZZY</h2>
-    <div class="category-sizes pizza-sizes">
-      <div>Mała<br><span>(25cm)</span></div>
-      <div>Średnia<br><span>(30cm)</span></div>
-      <div>Familijna<br><span>(40cm)</span></div>
+    <div class="category-header-grid">
+      <h2 class="category-title">DODATKI DO PIZZY</h2>
+      <div class="category-sizes-grid">
+        <div>Mała<br><span>(25cm)</span></div>
+        <div>Średnia<br><span>(30cm)</span></div>
+        <div>Familijna<br><span>(40cm)</span></div>
+      </div>
     </div>
   </div>
 
-  <div class="menu-grid">
+  <div class="menu-grid pizza-addons-grid">
     <div class="menu-item">
       <div class="menu-info">
         <h3>Warzywa i dodatki roślinne</h3>
@@ -374,6 +382,7 @@ footer p {
     </div>
   </div>
 </section>
+
 
 <!-- ===================== ZESTAWY OBIADOWE ===================== -->
 <section class="category-section">
