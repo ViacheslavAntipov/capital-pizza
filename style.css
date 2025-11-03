@@ -12,23 +12,53 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 25px;
+  padding: 10px 20px;
   border-bottom: 2px solid #000;
   position: sticky;
   top: 0;
   background: #fff;
   z-index: 1000;
-  transition: all 0.3s ease;
 }
 
-.logo-area h1 {
+/* Logo po lewej */
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+}
+.logo {
+  width: 50px;
+  height: 50px;
+}
+
+/* Środek headera */
+.center-header {
+  text-align: center;
+  flex: 1;
+}
+.center-header h1 {
   margin: 0;
   font-size: 26px;
 }
-.logo-area p {
+.subtitle {
   margin: 0;
   font-size: 14px;
-  color: #555;
+  color: #666;
+}
+
+/* Przycisk zamów online – widoczny tylko w mobile */
+.order-btn-mobile {
+  display: none;
+  background: #000;
+  color: #fff;
+  text-decoration: none;
+  padding: 6px 18px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 14px;
+  margin-top: 5px;
+}
+.order-btn-mobile:hover {
+  background: #e63946;
 }
 
 /* ===== NAWIGACJA DESKTOPOWA ===== */
@@ -45,19 +75,18 @@ header {
   color: #e63946;
 }
 
-/* ===== BURGER IKONA ===== */
+/* ===== BURGER ===== */
 #burger-icon {
   display: none;
   font-size: 28px;
   cursor: pointer;
-  user-select: none;
 }
 
 /* ===== PANEL BOCZNY ===== */
 #side-menu {
   position: fixed;
   top: 0;
-  right: -300px; 
+  right: -300px;
   width: 260px;
   height: 100vh;
   background: #000;
@@ -69,12 +98,10 @@ header {
   z-index: 3000;
   pointer-events: none;
 }
-
 #side-menu.open {
   right: 0;
   pointer-events: auto;
 }
-
 #side-menu a {
   color: #fff;
   text-decoration: none;
@@ -85,7 +112,6 @@ header {
 #side-menu a:hover {
   color: #e63946;
 }
-
 #close-menu {
   position: absolute;
   top: 15px;
@@ -96,15 +122,25 @@ header {
   font-size: 26px;
   cursor: pointer;
 }
+.side-order-btn {
+  background: #fff;
+  color: #000;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  margin-top: 15px;
+}
+.side-order-btn:hover {
+  background: #e63946;
+  color: #fff;
+}
 
-/* ===== HERO ===== */
+/* ===== SEKCJE ===== */
 .hero {
   text-align: center;
   padding: 100px 20px;
   background: #f7f7f7;
-}
-.hero h2 {
-  font-size: 36px;
 }
 .cta-button {
   display: inline-block;
@@ -120,50 +156,33 @@ header {
   background: #e63946;
 }
 
-/* ===== SEKCJE ===== */
+/* ===== MENU ===== */
 .content-section {
   max-width: 1000px;
   margin: 60px auto;
   padding: 0 20px;
   box-sizing: border-box;
 }
-.content-section h2 {
-  text-transform: uppercase;
-  border-bottom: 3px solid #000;
-  padding-bottom: 8px;
-  margin-bottom: 20px;
-}
-
-/* ===== MENU ===== */
-
-/* Kategoria — sticky header */
 .menu-category {
-  font-size: 22px;
-  font-weight: bold;
-  margin-top: 30px;
-  text-transform: uppercase;
-  border-bottom: 2px solid #000;
-  padding: 10px 0;
   position: sticky;
-  top: 70px; /* wysokość headera */
+  top: 70px;
   background: #fff;
   z-index: 500;
+  padding: 10px 0;
+  border-bottom: 2px solid #000;
+  font-weight: bold;
+  text-transform: uppercase;
   transition: box-shadow 0.3s ease;
 }
-
 .menu-category.sticky-shadow {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
-
-/* Siatka menu — pełna szerokość, kolumna */
 .menu-grid {
   display: flex;
   flex-direction: column;
   gap: 15px;
   margin-top: 15px;
 }
-
-/* Pojedyncza pozycja — pełen wiersz */
 .menu-item {
   display: flex;
   justify-content: space-between;
@@ -174,36 +193,18 @@ header {
   background: #fff;
   opacity: 0;
   transform: translateY(30px);
-  transition: transform 0.6s ease, opacity 0.6s ease, background 0.3s ease;
+  transition: transform 0.6s ease, opacity 0.6s ease;
 }
-
 .menu-item.visible {
   opacity: 1;
   transform: translateY(0);
 }
-
 .menu-item:hover {
   background: #000;
   color: #fff;
-  transform: translateY(-2px);
 }
-
-.menu-item h4 {
-  margin: 0 0 5px 0;
-  font-size: 18px;
-}
-
-.menu-item p {
-  margin: 0;
-  font-size: 14px;
-  max-width: 80%;
-  line-height: 1.4;
-}
-
 .price {
   font-weight: bold;
-  font-size: 16px;
-  flex-shrink: 0;
 }
 
 /* ===== STOPKA ===== */
@@ -212,37 +213,22 @@ footer {
   color: #fff;
   text-align: center;
   padding: 25px 10px;
-  font-size: 14px;
 }
 
-/* ===== RESPONSYWNOŚĆ ===== */
-@media (max-width: 900px) {
-  .main-nav {
-    display: none;
-  }
-
-  #burger-icon {
-    display: block;
-  }
-
-  .menu-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .menu-item p {
-    max-width: 100%;
-  }
-
-  .price {
-    align-self: flex-end;
-  }
-}
-
-/* ===== UKRYCIE MENU NA DESKTOPIE ===== */
-@media (min-width: 901px) {
-  #side-menu {
-    display: none !important;
-  }
-}
+/* ===== PRZYCISK POWRÓT NA GÓRĘ ===== */
+#scrollTopBtn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 22px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 20
