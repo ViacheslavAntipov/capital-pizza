@@ -1,5 +1,4 @@
-// === CONFIG ===
-// Mapowanie kategorii na ładne tytuły + emoji
+// === MAPA KATEGORII ===
 const categoryMap = {
   pizza: "🍕 Pizza",
   dodatki_pizza: "🧀 Dodatki do pizzy",
@@ -18,36 +17,43 @@ async function loadMenu() {
   const container = document.getElementById("menu-container");
   try {
     const response = await fetch("menu.json");
-    if (!response.ok) throw new Error("Błąd podczas pobierania menu");
+    if (!response.ok) throw new Error("Błąd ładowania menu");
     const data = await response.json();
 
     container.innerHTML = "";
 
-    // Dla każdej kategorii twórz sekcję
     for (const [key, items] of Object.entries(data)) {
       const section = document.createElement("div");
       section.classList.add("menu-section");
 
-      // Nagłówek kategorii
+      // Tytuł kategorii
       const title = document.createElement("h3");
       title.textContent = categoryMap[key] || key;
       title.classList.add("menu-category");
       section.appendChild(title);
 
+      // Jeśli pizza – dodaj nagłówek z rozmiarami
+      if (key === "pizza") {
+        const sizes = document.createElement("div");
+        sizes.classList.add("menu-sizes");
+        sizes.innerHTML = "<span>Mała (25 cm)</span><span>Średnia (30 cm)</span><span>Familijna (40 cm)</span>";
+        section.appendChild(sizes);
+      }
+
       // Kontener pozycji
       const grid = document.createElement("div");
       grid.classList.add("menu-grid");
 
-      // Tworzenie pozycji
-      items.forEach(item => {
+      items.forEach((item, index) => {
         const itemDiv = document.createElement("div");
         itemDiv.classList.add("menu-item");
 
-        // Nazwa + składniki
+        // Lewa strona: nazwa + składniki
         const infoDiv = document.createElement("div");
         infoDiv.classList.add("menu-info");
+
         const nameEl = document.createElement("h4");
-        nameEl.textContent = item.name;
+        nameEl.textContent = `${index + 1}. ${item.name}`;
         infoDiv.appendChild(nameEl);
 
         if (item.ingredients) {
@@ -56,38 +62,17 @@ async function loadMenu() {
           infoDiv.appendChild(ingr);
         }
 
-        if (item.note) {
-          const note = document.createElement("p");
-          note.classList.add("note");
-          note.style.fontSize = "12px";
-          note.style.color = "#666";
-          note.textContent = item.note;
-          infoDiv.appendChild(note);
-        }
-
-        // Ceny i rozmiary
+        // Prawa strona: ceny
         const priceDiv = document.createElement("div");
         priceDiv.classList.add("menu-prices");
 
         if (item.prices && item.prices.length > 0) {
-          for (let i = 0; i < item.prices.length; i++) {
-            const row = document.createElement("div");
-            row.classList.add("price-row");
-
-            if (item.sizes && item.sizes[i]) {
-              const size = document.createElement("span");
-              size.classList.add("size");
-              size.textContent = item.sizes[i];
-              row.appendChild(size);
-            }
-
-            const price = document.createElement("span");
-            price.classList.add("price");
-            price.textContent = item.prices[i];
-            row.appendChild(price);
-
-            priceDiv.appendChild(row);
-          }
+          item.prices.forEach(price => {
+            const box = document.createElement("div");
+            box.classList.add("price-box");
+            box.textContent = price;
+            priceDiv.appendChild(box);
+          });
         }
 
         itemDiv.appendChild(infoDiv);
@@ -98,33 +83,10 @@ async function loadMenu() {
       section.appendChild(grid);
       container.appendChild(section);
     }
-
-    // Efekt pojawiania się elementów
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add("visible");
-      });
-    }, { threshold: 0.1 });
-    document.querySelectorAll(".menu-item").forEach(el => observer.observe(el));
-
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
     container.innerHTML = "<p>Błąd podczas ładowania menu 😥</p>";
   }
 }
-
-// === STICKY SHADOW ===
-window.addEventListener("scroll", () => {
-  const cats = document.querySelectorAll(".menu-category");
-  cats.forEach(cat => {
-    const rect = cat.getBoundingClientRect();
-    if (rect.top <= 70 && rect.bottom >= 70) {
-      cat.classList.add("sticky-shadow");
-    } else {
-      cat.classList.remove("sticky-shadow");
-    }
-  });
-});
 
 // === BURGER MENU ===
 const burger = document.getElementById("burger-icon");
@@ -134,16 +96,13 @@ const closeMenu = document.getElementById("close-menu");
 burger.addEventListener("click", () => sideMenu.classList.add("open"));
 closeMenu.addEventListener("click", () => sideMenu.classList.remove("open"));
 
-// === SCROLL TO TOP BUTTON ===
+// === SCROLL TO TOP ===
 const scrollBtn = document.getElementById("scrollTopBtn");
 window.addEventListener("scroll", () => {
-  if (window.scrollY > 300) {
-    scrollBtn.classList.add("show");
-  } else {
-    scrollBtn.classList.remove("show");
-  }
+  if (window.scrollY > 300) scrollBtn.classList.add("show");
+  else scrollBtn.classList.remove("show");
 });
 scrollBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
-// === INICJALIZACJA ===
+// === INIT ===
 document.addEventListener("DOMContentLoaded", loadMenu);
