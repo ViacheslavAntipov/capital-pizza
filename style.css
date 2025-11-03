@@ -1,0 +1,195 @@
+/* ===== PODSTAWY ===== */
+body {
+  margin: 0;
+  font-family: 'Bahnschrift', sans-serif;
+  background: #fff;
+  color: #000;
+}
+
+/* ===== HEADER ===== */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  border-bottom: 2px solid #000;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1000;
+}
+
+.logo-area h1 {
+  margin: 0;
+  font-size: 26px;
+}
+.logo-area p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+/* ===== NAWIGACJA DESKTOPOWA ===== */
+.main-nav {
+  display: flex;
+  gap: 20px;
+}
+.main-nav a {
+  text-decoration: none;
+  color: #000;
+  font-weight: bold;
+}
+.main-nav a:hover {
+  color: #e63946;
+}
+
+/* ===== BURGER IKONA ===== */
+#burger-icon {
+  display: none;
+  font-size: 28px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ===== PANEL BOCZNY ===== */
+#side-menu {
+  position: fixed;
+  top: 0;
+  right: -300px; 
+  width: 260px;
+  height: 100vh;
+  background: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 60px 20px;
+  transition: right 0.4s ease;
+  z-index: 3000;
+  pointer-events: none;
+}
+
+#side-menu.open {
+  right: 0;
+  pointer-events: auto;
+}
+
+#side-menu a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  margin: 15px 0;
+  transition: color 0.3s ease;
+}
+#side-menu a:hover {
+  color: #e63946;
+}
+
+#close-menu {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+/* ===== HERO ===== */
+.hero {
+  text-align: center;
+  padding: 100px 20px;
+  background: #f7f7f7;
+}
+.hero h2 {
+  font-size: 36px;
+}
+.cta-button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 30px;
+  background: #000;
+  color: #fff;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+}
+.cta-button:hover {
+  background: #e63946;
+}
+
+/* ===== SEKCJE ===== */
+.content-section {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+.content-section h2 {
+  text-transform: uppercase;
+  border-bottom: 3px solid #000;
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+}
+
+/* ===== STOPKA ===== */
+footer {
+  background: #000;
+  color: #fff;
+  text-align: center;
+  padding: 25px 10px;
+  font-size: 14px;
+}
+
+/* ===== MENU ===== */
+.menu-category {
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 30px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #000;
+  padding-bottom: 5px;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.menu-item {
+  border: 2px solid #000;
+  border-radius: 6px;
+  padding: 15px;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.menu-item:hover {
+  background: #000;
+  color: #fff;
+  transform: translateY(-3px);
+}
+
+.price {
+  font-weight: bold;
+  display: block;
+  margin-top: 8px;
+}
+
+/* ===== RESPONSYWNOŚĆ ===== */
+@media (max-width: 900px) {
+  .main-nav {
+    display: none;
+  }
+
+  #burger-icon {
+    display: block;
+  }
+}
+
+/* ===== UKRYCIE MENU NA DESKTOPIE ===== */
+@media (min-width: 901px) {
+  #side-menu {
+    display: none !important;
+  }
+}

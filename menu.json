@@ -1,0 +1,11 @@
+{
+  "pizza": [
+    { "name": "Margherita", "ingredients": "Sos pomidorowy, mozzarella, oregano", "price": "34 zł" },
+    { "name": "Capriciosa", "ingredients": "Sos pomidorowy, mozzarella, szynka, pieczarki", "price": "37 zł" },
+    { "name": "Diavolo", "ingredients": "Sos pomidorowy, mozzarella, salami, jalapeno", "price": "39 zł" }
+  ],
+  "burgery": [
+    { "name": "Burger Szefa", "ingredients": "Wołowina, cheddar, bekon, sos BBQ", "price": "38 zł" },
+    { "name": "Burger Classic", "ingredients": "Wołowina, ser, pomidor, majonez", "price": "35 zł" }
+  ]
+}
