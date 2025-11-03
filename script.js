@@ -1,4 +1,4 @@
-// ===== Obsługa burger menu =====
+// ===== Burger menu =====
 const burger = document.getElementById('burger-icon');
 const sideMenu = document.getElementById('side-menu');
 const closeMenu = document.getElementById('close-menu');
@@ -9,7 +9,7 @@ sideMenu.addEventListener('click', e => {
   if (e.target.tagName === 'A') sideMenu.classList.remove('open');
 });
 
-// ===== Dynamiczne ładowanie menu z JSON =====
+// ===== Dynamiczne menu JSON =====
 async function loadMenu() {
   const container = document.getElementById('menu-container');
   try {
@@ -17,7 +17,6 @@ async function loadMenu() {
     const data = await response.json();
 
     let html = '';
-
     Object.keys(data).forEach(category => {
       html += `<h3 class="menu-category">${category.toUpperCase()}</h3>`;
       html += '<div class="menu-grid">';
@@ -27,24 +26,20 @@ async function loadMenu() {
             <h4>${item.name}</h4>
             <p>${item.ingredients}</p>
             <span class="price">${item.price}</span>
-          </div>
-        `;
+          </div>`;
       });
       html += '</div>';
     });
 
     container.innerHTML = html;
 
-    // ===== Animacja pojawiania się pozycji =====
     const observer = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) e.target.classList.add('visible');
       });
     }, { threshold: 0.1 });
-
     document.querySelectorAll('.menu-item').forEach(item => observer.observe(item));
 
-    // ===== Sticky cień dla kategorii =====
     const headers = document.querySelectorAll('.menu-category');
     window.addEventListener('scroll', () => {
       headers.forEach(h => {
@@ -54,10 +49,18 @@ async function loadMenu() {
       });
     });
 
-  } catch (err) {
+  } catch {
     container.innerHTML = '<p>Błąd podczas ładowania menu 😢</p>';
-    console.error(err);
   }
 }
-
 document.addEventListener('DOMContentLoaded', loadMenu);
+
+// ===== Przycisk "Wróć na górę" =====
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 300) scrollTopBtn.classList.add('show');
+  else scrollTopBtn.classList.remove('show');
+});
+scrollTopBtn.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
