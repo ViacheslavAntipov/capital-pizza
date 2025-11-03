@@ -1,46 +1,46 @@
-// === MAPA KATEGORII ===
 const categoryMap = {
-  pizza: "🍕 Pizza",
-  dodatki_pizza: "🧀 Dodatki do pizzy",
-  zestawy: "🍗 Zestawy obiadowe",
-  burgery: "🍔 Burgery",
-  salatki: "🥗 Sałatki",
-  pierogi: "🥟 Pierogi",
-  dodatki: "🍟 Dodatki",
-  sosy_i_oliwy: "🌶 Sosy i oliwy",
-  piwa: "🍺 Piwa bezalkoholowe",
-  napoje: "🧃 Napoje zimne"
+  pizza: { name: "🍕 Pizza", sizes: ["Mała (25 cm)", "Średnia (30 cm)", "Familijna (40 cm)"] },
+  dodatki_pizza: { name: "🧀 Dodatki do pizzy" },
+  zestawy: { name: "🍗 Zestawy obiadowe" },
+  burgery: { name: "🍔 Burgery" },
+  salatki: { name: "🥗 Sałatki" },
+  pierogi: { name: "🥟 Pierogi", sizes: ["Mała (10 szt.)", "Duża (16 szt.)"] },
+  dodatki: { name: "🍟 Dodatki" },
+  sosy_i_oliwy: { name: "🌶 Sosy i oliwy" },
+  piwa: { name: "🍺 Piwa bezalkoholowe" },
+  napoje: { name: "🧃 Napoje zimne", sizes: ["200 ml", "500 ml", "1 l"] }
 };
 
-// === POBIERANIE MENU ===
 async function loadMenu() {
   const container = document.getElementById("menu-container");
   try {
     const response = await fetch("menu.json");
     if (!response.ok) throw new Error("Błąd ładowania menu");
     const data = await response.json();
-
     container.innerHTML = "";
 
     for (const [key, items] of Object.entries(data)) {
       const section = document.createElement("div");
       section.classList.add("menu-section");
 
-      // Tytuł kategorii
-      const title = document.createElement("h3");
-      title.textContent = categoryMap[key] || key;
-      title.classList.add("menu-category");
-      section.appendChild(title);
+      const sticky = document.createElement("div");
+      sticky.classList.add("menu-sticky");
 
-      // Jeśli pizza – dodaj nagłówek z rozmiarami
-      if (key === "pizza") {
-        const sizes = document.createElement("div");
-        sizes.classList.add("menu-sizes");
-        sizes.innerHTML = "<span>Mała (25 cm)</span><span>Średnia (30 cm)</span><span>Familijna (40 cm)</span>";
-        section.appendChild(sizes);
+      const title = document.createElement("div");
+      title.classList.add("menu-category");
+      title.textContent = categoryMap[key]?.name || key;
+
+      sticky.appendChild(title);
+
+      if (categoryMap[key]?.sizes) {
+        const sizesDiv = document.createElement("div");
+        sizesDiv.classList.add("menu-sizes");
+        sizesDiv.innerHTML = categoryMap[key].sizes.map(s => `<span>${s}</span>`).join("");
+        sticky.appendChild(sizesDiv);
       }
 
-      // Kontener pozycji
+      section.appendChild(sticky);
+
       const grid = document.createElement("div");
       grid.classList.add("menu-grid");
 
@@ -48,7 +48,6 @@ async function loadMenu() {
         const itemDiv = document.createElement("div");
         itemDiv.classList.add("menu-item");
 
-        // Lewa strona: nazwa + składniki
         const infoDiv = document.createElement("div");
         infoDiv.classList.add("menu-info");
 
@@ -62,11 +61,10 @@ async function loadMenu() {
           infoDiv.appendChild(ingr);
         }
 
-        // Prawa strona: ceny
         const priceDiv = document.createElement("div");
         priceDiv.classList.add("menu-prices");
 
-        if (item.prices && item.prices.length > 0) {
+        if (item.prices?.length) {
           item.prices.forEach(price => {
             const box = document.createElement("div");
             box.classList.add("price-box");
@@ -83,12 +81,12 @@ async function loadMenu() {
       section.appendChild(grid);
       container.appendChild(section);
     }
-  } catch (err) {
+  } catch {
     container.innerHTML = "<p>Błąd podczas ładowania menu 😥</p>";
   }
 }
 
-// === BURGER MENU ===
+// === BURGER ===
 const burger = document.getElementById("burger-icon");
 const sideMenu = document.getElementById("side-menu");
 const closeMenu = document.getElementById("close-menu");
@@ -104,5 +102,4 @@ window.addEventListener("scroll", () => {
 });
 scrollBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
-// === INIT ===
 document.addEventListener("DOMContentLoaded", loadMenu);
