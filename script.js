@@ -34,6 +34,26 @@ async function loadMenu() {
     });
 
     container.innerHTML = html;
+
+    // ===== Animacja pojawiania się pozycji =====
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.menu-item').forEach(item => observer.observe(item));
+
+    // ===== Sticky cień dla kategorii =====
+    const headers = document.querySelectorAll('.menu-category');
+    window.addEventListener('scroll', () => {
+      headers.forEach(h => {
+        const rect = h.getBoundingClientRect();
+        if (rect.top <= 70 && rect.bottom > 0) h.classList.add('sticky-shadow');
+        else h.classList.remove('sticky-shadow');
+      });
+    });
+
   } catch (err) {
     container.innerHTML = '<p>Błąd podczas ładowania menu 😢</p>';
     console.error(err);
