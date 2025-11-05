@@ -121,8 +121,10 @@ function renderMenu(data) {
       div.classList.add("menu-item");
 
       div.innerHTML = `
-        <span>${item.name} — ${item.prices.join(", ")}</span>
+        <span>${index + 1}. ${item.name} — ${item.prices.join(", ")}</span>
         <div>
+          <button onclick="moveItemUp('${category}', ${index})">⬆️</button>
+          <button onclick="moveItemDown('${category}', ${index})">⬇️</button>
           <button onclick="editItem('${category}', ${index})">✏️</button>
           <button onclick="deleteItem('${category}', ${index})">🗑</button>
         </div>
@@ -130,6 +132,25 @@ function renderMenu(data) {
       listDiv.appendChild(div);
     });
   });
+}
+
+// === ZMIANA KOLEJNOŚCI (w górę / w dół) ===
+function moveItemUp(category, index) {
+  if (index === 0) return; // już na górze
+  const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
+  const items = menu[category];
+  [items[index - 1], items[index]] = [items[index], items[index - 1]];
+  localStorage.setItem(menuKey, JSON.stringify(menu));
+  renderMenu(menu);
+}
+
+function moveItemDown(category, index) {
+  const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
+  const items = menu[category];
+  if (index === items.length - 1) return; // już na dole
+  [items[index + 1], items[index]] = [items[index], items[index + 1]];
+  localStorage.setItem(menuKey, JSON.stringify(menu));
+  renderMenu(menu);
 }
 
 function populateCategories(data) {
@@ -239,4 +260,5 @@ document.getElementById("upload-btn").addEventListener("click", async () => {
     alert("❌ Wystąpił błąd połączenia z GitHub.");
   }
 });
+
 
