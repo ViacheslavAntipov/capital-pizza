@@ -1,5 +1,10 @@
 const PASSWORD = "admin123";
 const menuKey = "capitalPizzaMenu";
+const repoOwner = "viacheslavantipov";
+const repoName = "capital-pizza";
+const filePath = "menu.json";
+const rawUrl = "https://viacheslavantipov.github.io/capital-pizza/menu.json";
+
 let editIndex = null;
 let editCategory = null;
 
@@ -9,22 +14,56 @@ document.getElementById("login-btn").addEventListener("click", () => {
   if (pass === PASSWORD) {
     document.getElementById("login-section").classList.add("hidden");
     document.getElementById("admin-panel").classList.remove("hidden");
-    loadMenu();
+    init();
   } else {
     document.getElementById("login-error").textContent = "❌ Nieprawidłowe hasło";
   }
 });
 
-// === WCZYTANIE MENU ===
-function loadMenu() {
-  const data = JSON.parse(localStorage.getItem(menuKey)) || {};
+// === INICJALIZACJA ===
+async function init() {
+  loadToken();
+  await loadMenuFromGitHub();
+}
+
+// === TOKEN GITHUB ===
+document.getElementById("save-token-btn").addEventListener("click", () => {
+  const token = document.getElementById("github-token").value.trim();
+  if (token) {
+    localStorage.setItem("githubToken", token);
+    document.getElementById("token-status").textContent = "✅ Token zapisany lokalnie";
+  }
+});
+
+document.getElementById("clear-token-btn").addEventListener("click", () => {
+  localStorage.removeItem("githubToken");
+  document.getElementById("token-status").textContent = "❌ Token usunięty";
+});
+
+function loadToken() {
+  const token = localStorage.getItem("githubToken");
+  if (token) {
+    document.getElementById("token-status").textContent = "🔒 Token zapisany w przeglądarce";
+  }
+}
+
+// === WCZYTANIE MENU Z GITHUB ===
+async function loadMenuFromGitHub() {
+  try {
+    const res = await fetch(rawUrl + "?t=" + Date.now());
+    const data = await res.json();
+    localStorage.setItem(menuKey, JSON.stringify(data));
+    populateCategories(data);
+    renderMenu(data);
+  } catch (err) {
+    alert("⚠️ Błąd wczytywania menu z GitHub. Sprawdź połączenie.");
+  }
+}
+
+// === RENDEROWANIE MENU ===
+function renderMenu(data) {
   const listDiv = document.getElementById("menu-list");
   listDiv.innerHTML = "";
-
-  if (Object.keys(data).length === 0) {
-    listDiv.innerHTML = "<p>Brak pozycji w menu. Dodaj pierwszą pozycję!</p>";
-    return;
-  }
 
   Object.entries(data).forEach(([category, items]) => {
     const catHeader = document.createElement("h3");
@@ -44,6 +83,17 @@ function loadMenu() {
       `;
       listDiv.appendChild(div);
     });
+  });
+}
+
+function populateCategories(data) {
+  const select = document.getElementById("category");
+  select.innerHTML = "";
+  Object.keys(data).forEach(cat => {
+    const opt = document.createElement("option");
+    opt.value = cat;
+    opt.textContent = cat;
+    select.appendChild(opt);
   });
 }
 
@@ -70,49 +120,31 @@ document.getElementById("add-btn").addEventListener("click", () => {
   }
 
   localStorage.setItem(menuKey, JSON.stringify(menu));
-  clearForm();
-  loadMenu();
+  renderMenu(menu);
 });
 
-function clearForm() {
-  document.getElementById("name").value = "";
-  document.getElementById("ingredients").value = "";
-  document.getElementById("prices").value = "";
-  document.getElementById("category").value = "pizza";
-}
-
-function editItem(category, index) {
+// === DODAJ NOWĄ KATEGORIĘ ===
+document.getElementById("add-category-btn").addEventListener("click", () => {
+  const newCat = prompt("Podaj nazwę nowej kategorii:");
+  if (!newCat) return;
   const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
-  const item = menu[category][index];
-  document.getElementById("name").value = item.name;
-  document.getElementById("ingredients").value = item.ingredients;
-  document.getElementById("prices").value = item.prices.join(", ");
-  document.getElementById("category").value = category;
+  if (!menu[newCat]) menu[newCat] = [];
+  localStorage.setItem(menuKey, JSON.stringify(menu));
+  populateCategories(menu);
+  renderMenu(menu);
+});
 
-  editIndex = index;
-  editCategory = category;
-}
-
+// === USUWANIE ===
 function deleteItem(category, index) {
-  if (!confirm("Na pewno usunąć pozycję?")) return;
   const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
   menu[category].splice(index, 1);
   localStorage.setItem(menuKey, JSON.stringify(menu));
-  loadMenu();
+  renderMenu(menu);
 }
-
-// === WYCZYŚĆ ===
-document.getElementById("clear-btn").addEventListener("click", () => {
-  if (confirm("Na pewno usunąć CAŁE menu?")) {
-    localStorage.removeItem(menuKey);
-    loadMenu();
-  }
-});
 
 // === EKSPORT ===
 document.getElementById("export-btn").addEventListener("click", () => {
   const data = localStorage.getItem(menuKey);
-  if (!data) return alert("Brak danych do eksportu!");
   const blob = new Blob([data], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -121,25 +153,43 @@ document.getElementById("export-btn").addEventListener("click", () => {
   a.click();
 });
 
-// === IMPORT Z PLIKU ===
-document.getElementById("import-btn").addEventListener("click", () => {
-  document.getElementById("import-file").click();
-});
+// === ZAPISZ MENU NA GITHUB ===
+document.getElementById("upload-btn").addEventListener("click", async () => {
+  const token = localStorage.getItem("githubToken");
+  if (!token) return alert("❌ Najpierw wklej swój token GitHub API.");
 
-document.getElementById("import-file").addEventListener("change", function () {
-  const file = this.files[0];
-  if (!file) return;
+  const menuData = localStorage.getItem(menuKey);
+  const message = "Aktualizacja menu.json przez panel admina";
 
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const imported = JSON.parse(e.target.result);
-      localStorage.setItem(menuKey, JSON.stringify(imported));
-      alert("✅ Pomyślnie zaimportowano menu!");
-      loadMenu();
-    } catch {
-      alert("❌ Błąd podczas importu – nieprawidłowy format JSON!");
+  try {
+    // Pobierz sha istniejącego pliku
+    const shaRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`);
+    const shaData = await shaRes.json();
+    const sha = shaData.sha;
+
+    // Zaktualizuj plik menu.json
+    const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `token ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message,
+        content: btoa(unescape(encodeURIComponent(menuData))),
+        sha,
+      }),
+    });
+
+    if (res.ok) {
+      alert("✅ Menu zapisane na stronie!");
+    } else {
+      const err = await res.json();
+      console.error(err);
+      alert("❌ Błąd podczas zapisywania: " + (err.message || "nieznany"));
     }
-  };
-  reader.readAsText(file);
+  } catch (err) {
+    console.error(err);
+    alert("❌ Wystąpił błąd połączenia z GitHub.");
+  }
 });
