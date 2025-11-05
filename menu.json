@@ -3,14 +3,22 @@
     {
       "name": "Capital",
       "ingredients": "Sos pomidorowy, ser mozzarella, salami, szynka, pieczarki, kukurydza, oliwki, cebula, oregano",
-      "prices": ["37 zł", "52 zł", "76 zł"],
-      "image": "images/pizza/capital.jpg"
+      "prices": [
+        "37 zł",
+        "52 zł",
+        "76 zł"
+      ],
+      "image": "images/1268295_CapitalPizza_Food_PizzaParma.jpg"
     },
     {
       "name": "Tropicana",
       "ingredients": "Sos pomidorowy, ser mozzarella, szynka, ananas, oregano",
-      "prices": ["37 zł", "51 zł", "75 zł"],
-      "image": "images/pizza/tropicana.jpg"
+      "prices": [
+        "37 zł",
+        "51 zł",
+        "75 zł"
+      ],
+      "image": "images/IMG_20200715_164332.jpg"
     }
   ]
 }
