@@ -41,7 +41,6 @@ document.getElementById("save-token-btn").addEventListener("click", () => {
   status.textContent = "✅ Token zapisany lokalnie. Sprawdzam połączenie z GitHub...";
   status.style.color = "green";
 
-  // Test połączenia z GitHub API
   fetch("https://api.github.com/user", {
     headers: { Authorization: `token ${token}` }
   })
@@ -80,19 +79,6 @@ function loadToken() {
   }
 }
 
-
-document.getElementById("clear-token-btn").addEventListener("click", () => {
-  localStorage.removeItem("githubToken");
-  document.getElementById("token-status").textContent = "❌ Token usunięty";
-});
-
-function loadToken() {
-  const token = localStorage.getItem("githubToken");
-  if (token) {
-    document.getElementById("token-status").textContent = "🔒 Token zapisany w przeglądarce";
-  }
-}
-
 // === WCZYTANIE MENU Z GITHUB ===
 async function loadMenuFromGitHub() {
   try {
@@ -106,7 +92,7 @@ async function loadMenuFromGitHub() {
   }
 }
 
-// === RENDEROWANIE MENU ===
+// === WYŚWIETLANIE MENU ===
 function renderMenu(data) {
   const listDiv = document.getElementById("menu-list");
   listDiv.innerHTML = "";
@@ -134,25 +120,7 @@ function renderMenu(data) {
   });
 }
 
-// === ZMIANA KOLEJNOŚCI (w górę / w dół) ===
-function moveItemUp(category, index) {
-  if (index === 0) return; // już na górze
-  const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
-  const items = menu[category];
-  [items[index - 1], items[index]] = [items[index], items[index - 1]];
-  localStorage.setItem(menuKey, JSON.stringify(menu));
-  renderMenu(menu);
-}
-
-function moveItemDown(category, index) {
-  const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
-  const items = menu[category];
-  if (index === items.length - 1) return; // już na dole
-  [items[index + 1], items[index]] = [items[index], items[index + 1]];
-  localStorage.setItem(menuKey, JSON.stringify(menu));
-  renderMenu(menu);
-}
-
+// === UZUPEŁNIENIE LISTY KATEGORII ===
 function populateCategories(data) {
   const select = document.getElementById("category");
   select.innerHTML = "";
@@ -164,21 +132,21 @@ function populateCategories(data) {
   });
 }
 
-// === DODAWANIE / EDYCJA ===
+// === DODAWANIE / ZAPISYWANIE ZMIAN ===
 document.getElementById("add-btn").addEventListener("click", () => {
   const category = document.getElementById("category").value;
   const name = document.getElementById("name").value.trim();
   const ingredients = document.getElementById("ingredients").value.trim();
   const prices = document.getElementById("prices").value.split(",").map(p => p.trim());
 
-  if (!name) return alert("Wpisz nazwę pozycji!");
+  if (!name) return alert("⚠️ Wpisz nazwę pozycji!");
 
   let menu = JSON.parse(localStorage.getItem(menuKey)) || {};
   if (!menu[category]) menu[category] = [];
 
   const newItem = { name, ingredients, prices };
 
-  if (editIndex !== null) {
+  if (editIndex !== null && editCategory === category) {
     menu[editCategory][editIndex] = newItem;
     editIndex = null;
     editCategory = null;
@@ -188,9 +156,72 @@ document.getElementById("add-btn").addEventListener("click", () => {
 
   localStorage.setItem(menuKey, JSON.stringify(menu));
   renderMenu(menu);
+  clearForm();
 });
 
-// === DODAJ NOWĄ KATEGORIĘ ===
+// === CZYSZCZENIE FORMULARZA ===
+function clearForm() {
+  document.getElementById("name").value = "";
+  document.getElementById("ingredients").value = "";
+  document.getElementById("prices").value = "";
+  document.getElementById("category").value = "pizza";
+
+  editIndex = null;
+  editCategory = null;
+
+  const addBtn = document.getElementById("add-btn");
+  addBtn.textContent = "💾 Zapisz pozycję";
+  addBtn.style.background = "#000";
+}
+
+// === EDYCJA POZYCJI ===
+function editItem(category, index) {
+  const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
+  const item = menu[category][index];
+  if (!item) return alert("❌ Nie znaleziono pozycji do edycji.");
+
+  document.getElementById("category").value = category;
+  document.getElementById("name").value = item.name;
+  document.getElementById("ingredients").value = item.ingredients || "";
+  document.getElementById("prices").value = item.prices.join(", ");
+
+  editIndex = index;
+  editCategory = category;
+
+  const addBtn = document.getElementById("add-btn");
+  addBtn.textContent = "💾 Zapisz zmiany (edycja)";
+  addBtn.style.background = "#e63946";
+}
+
+// === ZMIANA KOLEJNOŚCI ===
+function moveItemUp(category, index) {
+  if (index === 0) return;
+  const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
+  const items = menu[category];
+  [items[index - 1], items[index]] = [items[index], items[index - 1]];
+  localStorage.setItem(menuKey, JSON.stringify(menu));
+  renderMenu(menu);
+}
+
+function moveItemDown(category, index) {
+  const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
+  const items = menu[category];
+  if (index === items.length - 1) return;
+  [items[index + 1], items[index]] = [items[index], items[index + 1]];
+  localStorage.setItem(menuKey, JSON.stringify(menu));
+  renderMenu(menu);
+}
+
+// === USUWANIE ===
+function deleteItem(category, index) {
+  if (!confirm("Na pewno usunąć pozycję?")) return;
+  const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
+  menu[category].splice(index, 1);
+  localStorage.setItem(menuKey, JSON.stringify(menu));
+  renderMenu(menu);
+}
+
+// === DODANIE NOWEJ KATEGORII ===
 document.getElementById("add-category-btn").addEventListener("click", () => {
   const newCat = prompt("Podaj nazwę nowej kategorii:");
   if (!newCat) return;
@@ -200,14 +231,6 @@ document.getElementById("add-category-btn").addEventListener("click", () => {
   populateCategories(menu);
   renderMenu(menu);
 });
-
-// === USUWANIE ===
-function deleteItem(category, index) {
-  const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
-  menu[category].splice(index, 1);
-  localStorage.setItem(menuKey, JSON.stringify(menu));
-  renderMenu(menu);
-}
 
 // === EKSPORT ===
 document.getElementById("export-btn").addEventListener("click", () => {
@@ -220,7 +243,7 @@ document.getElementById("export-btn").addEventListener("click", () => {
   a.click();
 });
 
-// === ZAPISZ MENU NA GITHUB ===
+// === ZAPIS NA GITHUB ===
 document.getElementById("upload-btn").addEventListener("click", async () => {
   const token = localStorage.getItem("githubToken");
   if (!token) return alert("❌ Najpierw wklej swój token GitHub API.");
@@ -229,12 +252,10 @@ document.getElementById("upload-btn").addEventListener("click", async () => {
   const message = "Aktualizacja menu.json przez panel admina";
 
   try {
-    // Pobierz sha istniejącego pliku
     const shaRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`);
     const shaData = await shaRes.json();
     const sha = shaData.sha;
 
-    // Zaktualizuj plik menu.json
     const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
       method: "PUT",
       headers: {
@@ -252,13 +273,9 @@ document.getElementById("upload-btn").addEventListener("click", async () => {
       alert("✅ Menu zapisane na stronie!");
     } else {
       const err = await res.json();
-      console.error(err);
       alert("❌ Błąd podczas zapisywania: " + (err.message || "nieznany"));
     }
   } catch (err) {
-    console.error(err);
     alert("❌ Wystąpił błąd połączenia z GitHub.");
   }
 });
-
-
