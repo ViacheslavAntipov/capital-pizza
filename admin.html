@@ -12,7 +12,7 @@
     <h1>🍕 Capital Pizza – Panel Administracyjny</h1>
   </header>
 
-  <!-- ===== LOGOWANIE ===== -->
+  <!-- === Logowanie === -->
   <section id="login-section">
     <h2>Zaloguj się</h2>
     <input type="password" id="admin-password" placeholder="Hasło" />
@@ -20,24 +20,22 @@
     <p id="login-error"></p>
   </section>
 
-  <!-- ===== PANEL ===== -->
+  <!-- === Panel admina === -->
   <section id="admin-panel" class="hidden">
+
+    <div id="github-section">
+      <h2>🔑 Token GitHub API</h2>
+      <input type="password" id="github-token" placeholder="Wklej swój GitHub token" />
+      <button id="save-token-btn">Zapisz token</button>
+      <button id="clear-token-btn" class="danger">Usuń token</button>
+      <p id="token-status"></p>
+    </div>
+
     <div class="form-container">
       <h2>Dodaj / Edytuj pozycję</h2>
 
       <label>Kategoria:</label>
-      <select id="category">
-        <option value="pizza">🍕 Pizza</option>
-        <option value="dodatki_pizza">🧀 Dodatki do pizzy</option>
-        <option value="zestawy">🍗 Zestawy obiadowe</option>
-        <option value="burgery">🍔 Burgery</option>
-        <option value="salatki">🥗 Sałatki</option>
-        <option value="pierogi">🥟 Pierogi</option>
-        <option value="dodatki">🍟 Dodatki</option>
-        <option value="sosy_i_oliwy">🌶 Sosy i oliwy</option>
-        <option value="piwa">🍺 Piwa bezalkoholowe</option>
-        <option value="napoje">🧃 Napoje zimne</option>
-      </select>
+      <select id="category"></select>
 
       <label>Nazwa:</label>
       <input type="text" id="name" placeholder="Nazwa pozycji" />
@@ -57,15 +55,15 @@
     </div>
 
     <div class="actions">
-      <input type="file" id="import-file" accept="application/json" style="display:none" />
-      <button id="import-btn">📂 Importuj menu.json</button>
+      <button id="add-category-btn">➕ Dodaj nową kategorię</button>
       <button id="export-btn">⬇️ Eksportuj menu.json</button>
+      <button id="upload-btn">💾 Zapisz menu na stronie (GitHub)</button>
       <button id="clear-btn" class="danger">🗑 Wyczyść wszystko</button>
     </div>
   </section>
 
   <footer>
-    <p>© 2025 Capital Pizza Admin</p>
+    <p>© 2025 Capital Pizza Admin Panel</p>
   </footer>
 
   <script src="admin.js"></script>
