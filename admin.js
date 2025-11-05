@@ -1,4 +1,4 @@
-const repoOwner = "viacheslavantipov"; // 🔧 ZMIEŃ jeśli repozytorium ma innego właściciela
+const repoOwner = "viacheslavantipov"; 
 const repoName = "capital-pizza";
 const branch = "main";
 const menuPath = "menu.json";
@@ -6,7 +6,6 @@ const imagesFolder = "images/";
 
 let githubToken = localStorage.getItem("githubToken");
 
-// === Logowanie ===
 const loginBox = document.getElementById("login-box");
 const adminPanel = document.getElementById("admin-panel");
 document.getElementById("save-token").addEventListener("click", () => {
@@ -22,7 +21,6 @@ if (githubToken) {
   adminPanel.classList.remove("hidden");
 }
 
-// === Ładowanie menu ===
 document.getElementById("load-menu").addEventListener("click", loadMenu);
 document.getElementById("add-item").addEventListener("click", addMenuItem);
 document.getElementById("save-menu").addEventListener("click", saveMenu);
@@ -38,6 +36,7 @@ async function loadMenu() {
 function renderEditor() {
   const editor = document.getElementById("menu-editor");
   editor.innerHTML = "";
+
   for (const [category, items] of Object.entries(menuData)) {
     const h3 = document.createElement("h3");
     h3.textContent = category;
@@ -51,22 +50,28 @@ function renderEditor() {
         <input type="text" class="name" value="${item.name}" placeholder="Nazwa">
         <textarea class="ingredients" placeholder="Składniki">${item.ingredients || ""}</textarea>
         <input type="text" class="prices" value="${item.prices.join(", ")}" placeholder="Ceny (oddzielone przecinkami)">
-        ${item.image ? `<img src="${item.image}" class="image-preview">` : ""}
+        ${item.image ? `<img src="${item.image}" class="image-preview" id="preview-${category}-${idx}">` : `<img class="image-preview hidden" id="preview-${category}-${idx}">`}
         <label class="image-upload-label">📸 Dodaj zdjęcie
           <input type="file" class="image-upload" accept="image/*" hidden>
         </label>
         <button class="remove-btn">Usuń pozycję</button>
       `;
 
+      const previewEl = box.querySelector(`#preview-${category}-${idx}`);
+
       // === Upload zdjęcia ===
       box.querySelector(".image-upload").addEventListener("change", async (e) => {
         const file = e.target.files[0];
         if (!file) return;
         const base64 = await toBase64(file);
+
+        // 🔹 Pokaż miniaturę od razu
+        previewEl.src = base64;
+        previewEl.classList.remove("hidden");
+
         const filePath = `${imagesFolder}${file.name}`;
         await uploadFile(filePath, base64, `Upload ${file.name}`);
         item.image = filePath;
-        renderEditor();
       });
 
       // === Usuwanie pozycji ===
@@ -87,7 +92,6 @@ function addMenuItem() {
   renderEditor();
 }
 
-// === Zapis menu na GitHub ===
 async function saveMenu() {
   const editor = document.getElementById("menu-editor");
   let idx = 0;
@@ -103,8 +107,8 @@ async function saveMenu() {
 
   const jsonContent = JSON.stringify(menuData, null, 2);
   const encoded = btoa(unescape(encodeURIComponent(jsonContent)));
-
   const sha = await getFileSha(menuPath);
+
   await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${menuPath}`, {
     method: "PUT",
     headers: {
@@ -112,12 +116,12 @@ async function saveMenu() {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      message: "Aktualizacja menu przez Admin Panel",
+      message: "Aktualizacja menu przez Admin Panel (v4.2)",
       content: encoded,
-      sha: sha
+      sha
     })
   });
-  alert("✅ Menu zostało zapisane!");
+  alert("✅ Menu zostało zapisane i zaktualizowane!");
 }
 
 async function uploadFile(path, base64, message) {
