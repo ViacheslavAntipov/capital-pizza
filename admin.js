@@ -1,328 +1,156 @@
-// === KONFIGURACJA ===
-const PASSWORD = "admin123";
-const menuKey = "capitalPizzaMenu";
-const repoOwner = "viacheslavantipov";
+const repoOwner = "viacheslavantipov"; // 🔧 ZMIEŃ jeśli repozytorium ma innego właściciela
 const repoName = "capital-pizza";
-const filePath = "menu.json";
-const rawUrl = "https://viacheslavantipov.github.io/capital-pizza/menu.json";
-const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minut
+const branch = "main";
+const menuPath = "menu.json";
+const imagesFolder = "images/";
 
-let editIndex = null;
-let editCategory = null;
+let githubToken = localStorage.getItem("githubToken");
 
-// === SPRAWDZENIE SESJI ===
-checkLoginSession();
-
-function checkLoginSession() {
-  const session = JSON.parse(localStorage.getItem("adminSession"));
-  const now = Date.now();
-
-  if (session && session.loggedIn && (now - session.lastActivity < SESSION_TIMEOUT)) {
-    document.getElementById("login-section").classList.add("hidden");
-    document.getElementById("admin-panel").classList.remove("hidden");
-    init();
-  } else {
-    localStorage.removeItem("adminSession");
-  }
-}
-
-// === LOGOWANIE ===
-document.getElementById("login-btn").addEventListener("click", () => {
-  const pass = document.getElementById("admin-password").value;
-  if (pass === PASSWORD) {
-    localStorage.setItem("adminSession", JSON.stringify({
-      loggedIn: true,
-      lastActivity: Date.now()
-    }));
-    document.getElementById("login-section").classList.add("hidden");
-    document.getElementById("admin-panel").classList.remove("hidden");
-    init();
-  } else {
-    document.getElementById("login-error").textContent = "❌ Nieprawidłowe hasło";
-  }
+// === Logowanie ===
+const loginBox = document.getElementById("login-box");
+const adminPanel = document.getElementById("admin-panel");
+document.getElementById("save-token").addEventListener("click", () => {
+  githubToken = document.getElementById("github-token").value.trim();
+  if (!githubToken) return alert("Wklej token!");
+  localStorage.setItem("githubToken", githubToken);
+  loginBox.classList.add("hidden");
+  adminPanel.classList.remove("hidden");
 });
 
-// === AKTYWNOŚĆ – ODŚWIEŻENIE SESJI ===
-document.addEventListener("click", updateLastActivity);
-document.addEventListener("keypress", updateLastActivity);
-
-function updateLastActivity() {
-  const session = JSON.parse(localStorage.getItem("adminSession"));
-  if (session && session.loggedIn) {
-    session.lastActivity = Date.now();
-    localStorage.setItem("adminSession", JSON.stringify(session));
-  }
+if (githubToken) {
+  loginBox.classList.add("hidden");
+  adminPanel.classList.remove("hidden");
 }
 
-// === WYLOGOWANIE ===
-function logoutAdmin() {
-  localStorage.removeItem("adminSession");
-  location.reload();
+// === Ładowanie menu ===
+document.getElementById("load-menu").addEventListener("click", loadMenu);
+document.getElementById("add-item").addEventListener("click", addMenuItem);
+document.getElementById("save-menu").addEventListener("click", saveMenu);
+
+let menuData = {};
+
+async function loadMenu() {
+  const res = await fetch(menuPath + "?t=" + Date.now());
+  menuData = await res.json();
+  renderEditor();
 }
 
-// === INICJALIZACJA ===
-async function init() {
-  loadToken();
-  await loadMenuFromGitHub();
+function renderEditor() {
+  const editor = document.getElementById("menu-editor");
+  editor.innerHTML = "";
+  for (const [category, items] of Object.entries(menuData)) {
+    const h3 = document.createElement("h3");
+    h3.textContent = category;
+    editor.appendChild(h3);
 
-  const logoutBtn = document.createElement("button");
-  logoutBtn.textContent = "🚪 Wyloguj";
-  logoutBtn.classList.add("danger");
-  logoutBtn.style.marginBottom = "20px";
-  logoutBtn.addEventListener("click", logoutAdmin);
-  document.getElementById("admin-panel").prepend(logoutBtn);
-}
+    items.forEach((item, idx) => {
+      const box = document.createElement("div");
+      box.classList.add("item-box");
 
-// === TOKEN GITHUB ===
-document.getElementById("save-token-btn").addEventListener("click", () => {
-  const token = document.getElementById("github-token").value.trim();
-  const status = document.getElementById("token-status");
-
-  if (!token) {
-    status.textContent = "⚠️ Wklej token przed zapisaniem.";
-    status.style.color = "darkred";
-    return;
-  }
-
-  localStorage.setItem("githubToken", token);
-  status.textContent = "✅ Token zapisany lokalnie. Sprawdzam połączenie z GitHub...";
-  status.style.color = "green";
-
-  fetch("https://api.github.com/user", {
-    headers: { Authorization: `token ${token}` }
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data && data.login) {
-        status.textContent = `🔒 Połączono jako: ${data.login}`;
-        status.style.color = "green";
-      } else {
-        status.textContent = "⚠️ Token zapisany, ale GitHub nie potwierdził autoryzacji.";
-        status.style.color = "orange";
-      }
-    })
-    .catch(() => {
-      status.textContent = "⚠️ Nie udało się połączyć z GitHub.";
-      status.style.color = "darkred";
-    });
-});
-
-document.getElementById("clear-token-btn").addEventListener("click", () => {
-  localStorage.removeItem("githubToken");
-  const status = document.getElementById("token-status");
-  status.textContent = "❌ Token usunięty";
-  status.style.color = "darkred";
-});
-
-function loadToken() {
-  const token = localStorage.getItem("githubToken");
-  const status = document.getElementById("token-status");
-  if (token) {
-    status.textContent = "🔒 Token zapisany w przeglądarce";
-    status.style.color = "green";
-  } else {
-    status.textContent = "⚠️ Token nie jest jeszcze zapisany";
-    status.style.color = "darkred";
-  }
-}
-
-// === WCZYTANIE MENU Z GITHUB ===
-async function loadMenuFromGitHub() {
-  try {
-    const res = await fetch(rawUrl + "?t=" + Date.now());
-    const data = await res.json();
-    localStorage.setItem(menuKey, JSON.stringify(data));
-    populateCategories(data);
-    renderMenu(data);
-  } catch (err) {
-    alert("⚠️ Błąd wczytywania menu z GitHub. Sprawdź połączenie.");
-  }
-}
-
-// === RENDEROWANIE MENU ===
-function renderMenu(data) {
-  const listDiv = document.getElementById("menu-list");
-  listDiv.innerHTML = "";
-
-  Object.entries(data).forEach(([category, items]) => {
-    const catHeader = document.createElement("h3");
-    catHeader.textContent = category;
-    listDiv.appendChild(catHeader);
-
-    items.forEach((item, index) => {
-      const div = document.createElement("div");
-      div.classList.add("menu-item");
-
-      div.innerHTML = `
-        <span>${index + 1}. ${item.name} — ${item.prices.join(", ")}</span>
-        <div>
-          <button onclick="moveItemUp('${category}', ${index})">⬆️</button>
-          <button onclick="moveItemDown('${category}', ${index})">⬇️</button>
-          <button onclick="editItem('${category}', ${index})">✏️</button>
-          <button onclick="deleteItem('${category}', ${index})">🗑</button>
-        </div>
+      box.innerHTML = `
+        <input type="text" class="name" value="${item.name}" placeholder="Nazwa">
+        <textarea class="ingredients" placeholder="Składniki">${item.ingredients || ""}</textarea>
+        <input type="text" class="prices" value="${item.prices.join(", ")}" placeholder="Ceny (oddzielone przecinkami)">
+        ${item.image ? `<img src="${item.image}" class="image-preview">` : ""}
+        <label class="image-upload-label">📸 Dodaj zdjęcie
+          <input type="file" class="image-upload" accept="image/*" hidden>
+        </label>
+        <button class="remove-btn">Usuń pozycję</button>
       `;
-      listDiv.appendChild(div);
+
+      // === Upload zdjęcia ===
+      box.querySelector(".image-upload").addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const base64 = await toBase64(file);
+        const filePath = `${imagesFolder}${file.name}`;
+        await uploadFile(filePath, base64, `Upload ${file.name}`);
+        item.image = filePath;
+        renderEditor();
+      });
+
+      // === Usuwanie pozycji ===
+      box.querySelector(".remove-btn").addEventListener("click", () => {
+        items.splice(idx, 1);
+        renderEditor();
+      });
+
+      editor.appendChild(box);
     });
-  });
+  }
 }
 
-// === WYPEŁNIENIE LISTY KATEGORII ===
-function populateCategories(data) {
-  const select = document.getElementById("category");
-  select.innerHTML = "";
-  Object.keys(data).forEach(cat => {
-    const opt = document.createElement("option");
-    opt.value = cat;
-    opt.textContent = cat;
-    select.appendChild(opt);
-  });
+function addMenuItem() {
+  const firstCategory = Object.keys(menuData)[0];
+  if (!firstCategory) return alert("Najpierw załaduj menu!");
+  menuData[firstCategory].push({ name: "Nowa pozycja", ingredients: "", prices: ["0 zł"], image: "" });
+  renderEditor();
 }
 
-// === DODAWANIE / ZAPISYWANIE ===
-document.getElementById("add-btn").addEventListener("click", () => {
-  const category = document.getElementById("category").value;
-  const name = document.getElementById("name").value.trim();
-  const ingredients = document.getElementById("ingredients").value.trim();
-  const prices = document.getElementById("prices").value.split(",").map(p => p.trim());
-
-  if (!name) return alert("⚠️ Wpisz nazwę pozycji!");
-
-  let menu = JSON.parse(localStorage.getItem(menuKey)) || {};
-  if (!menu[category]) menu[category] = [];
-
-  const newItem = { name, ingredients, prices };
-
-  if (editIndex !== null && editCategory === category) {
-    menu[editCategory][editIndex] = newItem;
-    editIndex = null;
-    editCategory = null;
-  } else {
-    menu[category].push(newItem);
+// === Zapis menu na GitHub ===
+async function saveMenu() {
+  const editor = document.getElementById("menu-editor");
+  let idx = 0;
+  for (const [category, items] of Object.entries(menuData)) {
+    const boxes = editor.querySelectorAll(".item-box");
+    items.forEach(item => {
+      const box = boxes[idx++];
+      item.name = box.querySelector(".name").value;
+      item.ingredients = box.querySelector(".ingredients").value;
+      item.prices = box.querySelector(".prices").value.split(",").map(p => p.trim());
+    });
   }
 
-  localStorage.setItem(menuKey, JSON.stringify(menu));
-  renderMenu(menu);
-  clearForm();
-});
+  const jsonContent = JSON.stringify(menuData, null, 2);
+  const encoded = btoa(unescape(encodeURIComponent(jsonContent)));
 
-// === CZYSZCZENIE FORMULARZA ===
-function clearForm() {
-  document.getElementById("name").value = "";
-  document.getElementById("ingredients").value = "";
-  document.getElementById("prices").value = "";
-  document.getElementById("category").value = "pizza";
-
-  editIndex = null;
-  editCategory = null;
-
-  const addBtn = document.getElementById("add-btn");
-  addBtn.textContent = "💾 Zapisz pozycję";
-  addBtn.style.background = "#000";
+  const sha = await getFileSha(menuPath);
+  await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${menuPath}`, {
+    method: "PUT",
+    headers: {
+      "Authorization": `token ${githubToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: "Aktualizacja menu przez Admin Panel",
+      content: encoded,
+      sha: sha
+    })
+  });
+  alert("✅ Menu zostało zapisane!");
 }
 
-// === EDYCJA POZYCJI ===
-function editItem(category, index) {
-  const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
-  const item = menu[category][index];
-  if (!item) return alert("❌ Nie znaleziono pozycji do edycji.");
-
-  document.getElementById("category").value = category;
-  document.getElementById("name").value = item.name;
-  document.getElementById("ingredients").value = item.ingredients || "";
-  document.getElementById("prices").value = item.prices.join(", ");
-
-  editIndex = index;
-  editCategory = category;
-
-  const addBtn = document.getElementById("add-btn");
-  addBtn.textContent = "💾 Zapisz zmiany (edycja)";
-  addBtn.style.background = "#e63946";
+async function uploadFile(path, base64, message) {
+  const encoded = base64.split(",")[1];
+  const sha = await getFileSha(path).catch(() => null);
+  const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`, {
+    method: "PUT",
+    headers: {
+      "Authorization": `token ${githubToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message,
+      content: encoded,
+      sha
+    })
+  });
+  return res.json();
 }
 
-// === ZMIANA KOLEJNOŚCI ===
-function moveItemUp(category, index) {
-  if (index === 0) return;
-  const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
-  const items = menu[category];
-  [items[index - 1], items[index]] = [items[index], items[index - 1]];
-  localStorage.setItem(menuKey, JSON.stringify(menu));
-  renderMenu(menu);
+async function getFileSha(path) {
+  const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`, {
+    headers: { "Authorization": `token ${githubToken}` }
+  });
+  const data = await res.json();
+  return data.sha;
 }
 
-function moveItemDown(category, index) {
-  const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
-  const items = menu[category];
-  if (index === items.length - 1) return;
-  [items[index + 1], items[index]] = [items[index], items[index + 1]];
-  localStorage.setItem(menuKey, JSON.stringify(menu));
-  renderMenu(menu);
+function toBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+  });
 }
-
-// === USUWANIE ===
-function deleteItem(category, index) {
-  if (!confirm("Na pewno usunąć pozycję?")) return;
-  const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
-  menu[category].splice(index, 1);
-  localStorage.setItem(menuKey, JSON.stringify(menu));
-  renderMenu(menu);
-}
-
-// === DODAWANIE NOWEJ KATEGORII ===
-document.getElementById("add-category-btn").addEventListener("click", () => {
-  const newCat = prompt("Podaj nazwę nowej kategorii:");
-  if (!newCat) return;
-  const menu = JSON.parse(localStorage.getItem(menuKey)) || {};
-  if (!menu[newCat]) menu[newCat] = [];
-  localStorage.setItem(menuKey, JSON.stringify(menu));
-  populateCategories(menu);
-  renderMenu(menu);
-});
-
-// === EKSPORT MENU ===
-document.getElementById("export-btn").addEventListener("click", () => {
-  const data = localStorage.getItem(menuKey);
-  const blob = new Blob([data], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "menu.json";
-  a.click();
-});
-
-// === ZAPIS NA GITHUB ===
-document.getElementById("upload-btn").addEventListener("click", async () => {
-  const token = localStorage.getItem("githubToken");
-  if (!token) return alert("❌ Najpierw wklej swój token GitHub API.");
-
-  const menuData = localStorage.getItem(menuKey);
-  const message = "Aktualizacja menu.json przez panel admina";
-
-  try {
-    const shaRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`);
-    const shaData = await shaRes.json();
-    const sha = shaData.sha;
-
-    const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `token ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        message,
-        content: btoa(unescape(encodeURIComponent(menuData))),
-        sha,
-      }),
-    });
-
-    if (res.ok) {
-      alert("✅ Menu zapisane na stronie!");
-    } else {
-      const err = await res.json();
-      alert("❌ Błąd podczas zapisywania: " + (err.message || "nieznany"));
-    }
-  } catch (err) {
-    alert("❌ Wystąpił błąd połączenia z GitHub.");
-  }
-});
