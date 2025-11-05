@@ -29,11 +29,57 @@ async function init() {
 // === TOKEN GITHUB ===
 document.getElementById("save-token-btn").addEventListener("click", () => {
   const token = document.getElementById("github-token").value.trim();
-  if (token) {
-    localStorage.setItem("githubToken", token);
-    document.getElementById("token-status").textContent = "✅ Token zapisany lokalnie";
+  const status = document.getElementById("token-status");
+
+  if (!token) {
+    status.textContent = "⚠️ Wklej token przed zapisaniem.";
+    status.style.color = "darkred";
+    return;
   }
+
+  localStorage.setItem("githubToken", token);
+  status.textContent = "✅ Token zapisany lokalnie. Sprawdzam połączenie z GitHub...";
+  status.style.color = "green";
+
+  // Test połączenia z GitHub API
+  fetch("https://api.github.com/user", {
+    headers: { Authorization: `token ${token}` }
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.login) {
+        status.textContent = `🔒 Połączono jako: ${data.login}`;
+        status.style.color = "green";
+      } else {
+        status.textContent = "⚠️ Token zapisany, ale GitHub nie potwierdził autoryzacji.";
+        status.style.color = "orange";
+      }
+    })
+    .catch(() => {
+      status.textContent = "⚠️ Nie udało się połączyć z GitHub.";
+      status.style.color = "darkred";
+    });
 });
+
+document.getElementById("clear-token-btn").addEventListener("click", () => {
+  localStorage.removeItem("githubToken");
+  const status = document.getElementById("token-status");
+  status.textContent = "❌ Token usunięty";
+  status.style.color = "darkred";
+});
+
+function loadToken() {
+  const token = localStorage.getItem("githubToken");
+  const status = document.getElementById("token-status");
+  if (token) {
+    status.textContent = "🔒 Token zapisany w przeglądarce";
+    status.style.color = "green";
+  } else {
+    status.textContent = "⚠️ Token nie jest jeszcze zapisany";
+    status.style.color = "darkred";
+  }
+}
+
 
 document.getElementById("clear-token-btn").addEventListener("click", () => {
   localStorage.removeItem("githubToken");
@@ -193,3 +239,4 @@ document.getElementById("upload-btn").addEventListener("click", async () => {
     alert("❌ Wystąpił błąd połączenia z GitHub.");
   }
 });
+
