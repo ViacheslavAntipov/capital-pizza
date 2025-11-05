@@ -69,12 +69,14 @@ button:hover {
   border: none;
 }
 
-.item-box .image-preview {
+.image-preview {
+  display: block;
   width: 120px;
   height: 120px;
   object-fit: cover;
   border-radius: 6px;
-  margin-bottom: 8px;
+  margin: 10px 0;
+  border: 2px solid #333;
 }
 
 .image-upload-label {
@@ -85,6 +87,7 @@ button:hover {
   padding: 8px;
   border-radius: 5px;
   cursor: pointer;
+  margin-bottom: 5px;
 }
 
 .remove-btn {
