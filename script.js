@@ -15,7 +15,6 @@ async function loadMenu() {
   const container = document.getElementById("menu-container");
   try {
     const response = await fetch("menu.json");
-    if (!response.ok) throw new Error("Błąd ładowania menu");
     const data = await response.json();
     container.innerHTML = "";
 
@@ -62,7 +61,6 @@ async function loadMenu() {
 
         const priceDiv = document.createElement("div");
         priceDiv.classList.add("menu-prices");
-
         if (item.prices?.length) {
           item.prices.forEach(price => {
             const box = document.createElement("div");
@@ -74,6 +72,13 @@ async function loadMenu() {
 
         itemDiv.appendChild(infoDiv);
         itemDiv.appendChild(priceDiv);
+
+        // === Kliknięcie pozycji ===
+        itemDiv.addEventListener("click", () => {
+          if (!item.image) return;
+          showPhotoPopup(item);
+        });
+
         grid.appendChild(itemDiv);
       });
 
@@ -85,7 +90,45 @@ async function loadMenu() {
   }
 }
 
-// === BURGER ===
+// === POPUP I MODAL ===
+function showPhotoPopup(item) {
+  const popup = document.getElementById("photo-popup");
+  popup.innerHTML = `
+    <div class="box">
+      <p>👀 Zobaczyć zdjęcie <strong>${item.name}</strong>?</p>
+      <div>
+        <button onclick='openPhoto(${JSON.stringify(item)})'>Pokaż</button>
+        <button onclick="closePopup()">Anuluj</button>
+      </div>
+    </div>
+  `;
+  popup.classList.remove("hidden");
+}
+
+function closePopup() {
+  document.getElementById("photo-popup").classList.add("hidden");
+}
+
+function openPhoto(item) {
+  closePopup();
+  const modal = document.getElementById("photo-modal");
+  modal.innerHTML = `
+    <div class="content">
+      <span class="close" onclick="closePhoto()">×</span>
+      <h2>${item.name}</h2>
+      <img src="${item.image}" alt="${item.name}">
+      <p>${item.ingredients}</p>
+      <div class="menu-prices">${item.prices.join(" / ")}</div>
+    </div>
+  `;
+  modal.classList.remove("hidden");
+}
+
+function closePhoto() {
+  document.getElementById("photo-modal").classList.add("hidden");
+}
+
+// === BURGER + SCROLL ===
 document.getElementById("burger-icon").addEventListener("click", () =>
   document.getElementById("side-menu").classList.add("open")
 );
@@ -93,7 +136,6 @@ document.getElementById("close-menu").addEventListener("click", () =>
   document.getElementById("side-menu").classList.remove("open")
 );
 
-// === SCROLL TO TOP ===
 const scrollBtn = document.getElementById("scrollTopBtn");
 window.addEventListener("scroll", () => {
   if (window.scrollY > 300) scrollBtn.classList.add("show");
