@@ -113,3 +113,18 @@ footer {
   color: #888;
   font-size: 14px;
 }
+
+.menu-item button {
+  margin-left: 5px;
+  padding: 4px 8px;
+  font-size: 14px;
+  background: #000;
+  color: #fff;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.menu-item button:hover {
+  background: #e63946;
+}
+
